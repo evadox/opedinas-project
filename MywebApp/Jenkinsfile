@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Git checkout') {
+            steps {
+               git 'https://github.com/tkibnyusuf/opedinas-project.git'
+            }
+        }
+       stage('Build') {
+            steps {
+               sh ''' cd MywebApp && mvn clean package'''
+            }
+        }
+      stage('Test') {
+            steps {
+                sh ' cd MywebApp && mvn test'
+
+            }
+      }          
+                
+      stage('deploy to tomcat') {
+            steps {
+                deploy adapters: [tomcat9(credentialsId: 'cf87b901-803a-4e8c-9715-432f54db1e24', path: '', url: 'http://34.232.105.83:8080/')], contextPath: 'newapp', war: '**/*.war'
+                
+            }   
+                
+      }        
+                
+    }
+}   
