@@ -7,18 +7,17 @@ pipeline {
                 git 'https://github.com/evadox/opedinas-project.git'
             } 
         }
-       stage('Build') {
+       stage('Mvn Build') {
             steps {
                sh 'cd MywebApp && mvn clean package'
             }
         }
-      stage('Test') {
+      stage('Mvn Test') {
             steps {
                 sh 'cd MywebApp && mvn test'
             }
         }
       stage ('Code Qualty Scan') {
-            
            steps {
                   withSonarQubeEnv('sonar') {
              sh "mvn -f MywebApp/pom.xml sonar:sonar"
@@ -26,7 +25,6 @@ pipeline {
                }
             }
        }
-
       stage('deploy to tomcat') {
         steps {
             deploy adapters: [tomcat9(credentialsId: '55c240b0-3172-4a92-948f-d3677469d6c6', path: '', url: 'http://34.238.52.253:8080/')], contextPath: 'tomtom', war: '**/*.war'
