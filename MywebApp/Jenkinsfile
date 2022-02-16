@@ -1,31 +1,28 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('Git checkout') {
             steps {
                 git 'https://github.com/evadox/opedinas-project.git'
-            } 
-        }
-       stage('MvnBuild') {
-            steps {
-               sh 'cd MywebApp && mvn clean package'
             }
         }
-      stage('MvnTest') {
+      stage('Build') {
             steps {
-                sh 'cd MywebApp && mvn test'
-
+               sh ''' cd MywebApp && mvn clean package'''
             }
-      }
-
-      stage('deploy to tomcat') {
-        steps {
-            deploy adapters: [tomcat9(credentialsId: '55c240b0-3172-4a92-948f-d3677469d6c6', path: '', url: 'http://34.238.52.253:8080/')], contextPath: 'tomtom', war: '**/*.war'
-
         }
-
-    }
-
-   } 
-}
+      stage('Test') {
+            steps {
+                sh ' cd MywebApp && mvn test'
+            }
+        }
+     
+        
+        stage('deploy to tomcat') {
+            steps {
+                deploy adapters: [tomcat9(credentialsId: '32ec3825-003a-480e-82c9-b348ecd7d4ff', path: '', url: 'http://34.238.52.253:8080/')], contextPath: 'fan', war: '**/*.war'
+            }    
+        }    
+     }
+ }
